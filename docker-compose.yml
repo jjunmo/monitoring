@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    user: "$UID:$GID"
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/prometheus-data:/prometheus
+    networks:
+      - monitor-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    user: "$UID:$GID"
+    ports:
+      - "3005:3000"
+    volumes:
+      - ./grafana/grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - monitor-network
+
+networks:
+  monitor-network:
+    external: true  # 기존 네트워크 설정
+
